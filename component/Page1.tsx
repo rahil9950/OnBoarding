@@ -7,6 +7,7 @@ import { StaticImageData } from "next/image";
 import ProgressBar from "./ProgressBar";
 import { SubPageParent } from "./SubPageParent"; 
 import {headingAndQuestions} from "@/helper/headingAndQuestions"
+
 const kadwa = Kadwa({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -33,47 +34,39 @@ export const Page1 = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,subP
       prev.includes(title) ? prev.filter((x) => x !== title) : [...prev, title]
     );
   };
-  // const getOptions = () => {
-  //     switch (page) {
-  //       case 1:
-  //         return SubPageOne;
-  //       case 2:
-  //         return pageTwoButtonTextAndLogo;
-  //       case 3:
-  //         return pageThreeButtonTextAndLogo;
-  //       case 4:
-  //         return pageFourButtonTextAndLogo;
-  //       default:
-  //         return [];
-  //     }
-  //   };
-    const handleNextStep = ()=>{
-  if(!subPages){
-    setPage(page+1)
+
+  const handleNextStep = ()=>{
+    if(!subPages){
+      setPage(page+1)
+    }
+    if(subPages){
+      setShowSubPage(true)
+    }
+    return
   }
-  if(subPages){
-    setShowSubPage(true)
+
+  // If showing subpage, only render SubPageParent
+  if (subPages && showSubPage) {
+    return (
+      <SubPageParent  
+        page={page}
+        setPage={setPage}
+        totalQuestion={totalQuestion}
+        percentage={percentage}
+        OPTIONS={SubPageOne}
+        subPage={true}
+        subPageTotal={subPageTotal}
+      />
+    );
   }
-  return
-}
+
+  // Otherwise, render the main page
   return (
-    <> 
-    {
-      subPages && showSubPage ? (<SubPageParent  page={page}
-            setPage={setPage}
-            totalQuestion={totalQuestion}
-            percentage={percentage}
-            OPTIONS={SubPageOne}
-            subPage={true}
-            subPageTotal={subPageTotal}
-            />
-            
-          ) : (
-        <><div className="flex justify-center px-2 py-10 bg-[radial-gradient(circle,rgba(199,96,151,1)_0%,rgba(237,237,237,1)_100%)] h-full md:h-lvh">
-      <div className="bg-white shadow-xl rounded-xl p-10 w-full max-w-4xl">
+    <div className="flex justify-center px-2 py-10 bg-[radial-gradient(circle,rgba(199,96,151,1)_0%,rgba(237,237,237,1)_100%)] min-h-screen">
+      <div className="bg-white shadow-xl rounded-xl p-4 md:p-10 w-full max-w-4xl my-4">
          
         {/* Heading */}
-        <h1 className={`${kadwa.variable} font-bold text-3xl     text-black md:text-4xl text-center`}>
+        <h1 className={`${kadwa.variable} font-bold text-3xl text-black md:text-4xl text-center`}>
           {headsAndQue.heading}
         </h1>
 
@@ -93,7 +86,7 @@ export const Page1 = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,subP
         </div>
 
         {/* Question */}
-        <h2 className="text-md font-bold  text-black mt-10">
+        <h2 className="text-md font-bold text-black mt-10">
           {`${page}.${headsAndQue.question}`}
           <span className="text-gray-400 ml-2 text-xs">(Select as many as you like)</span>
         </h2>
@@ -129,14 +122,6 @@ export const Page1 = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,subP
           </button>
         </div>
       </div>
-    </div></>
-      ) 
-    }
-  
-    </>
+    </div>
   )
 };
-
-
-
-

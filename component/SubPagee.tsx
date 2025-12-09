@@ -6,7 +6,6 @@ import { StaticImageData } from "next/image";
 import ProgressBar from "./ProgressBar";
 import { headingAndQuestions } from "@/helper/headingAndQuestions";
 
-
 const kadwa = Kadwa({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -22,32 +21,44 @@ interface Page1Props {
   changeSubPage : number,
   setChangeSubpage : Dispatch<SetStateAction<number>>;
   subPageTotal? : number
-
 }
 
-export const SubPagee = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,changeSubPage, setChangeSubpage ,subPageTotal} : Page1Props) => {
+export const SubPagee = ({page, setPage, totalQuestion, percentage, OPTIONS, changeSubPage, setChangeSubpage, subPageTotal} : Page1Props) => {
   const [selected, setSelected] = useState<string[]>([]);
   
-  const subPageDetails = headingAndQuestions[page-1].subPageData[changeSubPage-1]
+  // Ensure we have valid data before accessing
+  const pageData = headingAndQuestions[page-1];
+  const subPageDetails = pageData?.subPageData?.[changeSubPage-1];
+  
+  // Handle case where data might not be available
+  if (!subPageDetails) {
+    return (
+      <div className="flex justify-center items-center px-2 py-10 bg-[radial-gradient(circle,rgba(199,96,151,1)_0%,rgba(237,237,237,1)_100%)] min-h-screen">
+        <div className="bg-white shadow-xl rounded-xl p-10 w-full max-w-4xl text-center">
+          <p>Loading subpage data...</p>
+        </div>
+      </div>
+    );
+  }
   
   const toggleSelect = (title: string) => {
     setSelected((prev) =>
       prev.includes(title) ? prev.filter((x) => x !== title) : [...prev, title]
     );
   };
+  
   const handleContinue = ()=>{
     if(changeSubPage === subPageTotal){
-    setPage(page+1)
-  }
-  else{
-    setChangeSubpage(changeSubPage+1)
-  }
-  return
+      setPage(page+1)
+    } else {
+      setChangeSubpage(changeSubPage+1)
+    }
+    return
   }
 
   return (
-    <div className="flex justify-center px-2 py-10 bg-[radial-gradient(circle,rgba(199,96,151,1)_0%,rgba(237,237,237,1)_100%)] h-full md:h-lvh">
-      <div className="bg-white shadow-xl rounded-xl p-10 w-full max-w-4xl">
+    <div className="flex justify-center px-2 py-10 bg-[radial-gradient(circle,rgba(199,96,151,1)_0%,rgba(237,237,237,1)_100%)] min-h-screen">
+      <div className="bg-white shadow-xl rounded-xl p-4 md:p-10 w-full max-w-4xl my-4">
         
         {/* Heading */}
         <h1 className={`${kadwa.variable} font-bold text-3xl text-black md:text-4xl text-center`}>
@@ -69,9 +80,9 @@ export const SubPagee = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,c
           <ProgressBar percentage={percentage}/>
         </div>
 
-        {/* Question */}
-        <h2 className="text-md font-bold  text-black mt-10">
-          1. What describes you best?
+        {/* Question - Fixed the hardcoded text */}
+        <h2 className="text-md font-bold text-black mt-10">
+          {`${changeSubPage}. ${subPageDetails.heading || "What describes you best?"}`}
           <span className="text-gray-400 ml-2 text-xs">(Select as many as you like)</span>
         </h2>
 
@@ -109,7 +120,3 @@ export const SubPagee = ({page,  setPage, totalQuestion  ,percentage ,OPTIONS ,c
     </div>
   );
 };
-
-
-
-
